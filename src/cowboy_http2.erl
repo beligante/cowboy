@@ -326,6 +326,7 @@ parse(State=#state{http2_status=Status, http2_machine=HTTP2Machine, streams=Stre
 		{ignore, Rest} ->
 			parse(frame_rate(State, ignore), Rest);
 		{stream_error, StreamID, Reason, Human, Rest} ->
+			erlang:display({Reason, StreamID}),
 			parse(reset_stream(State, StreamID, {stream_error, Reason, Human}), Rest);
 		Error = {connection_error, _, _} ->
 			terminate(State, Error);
