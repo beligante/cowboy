@@ -252,6 +252,7 @@ loop(State=#state{parent=Parent, socket=Socket, transport=Transport,
 			loop(State, Buffer);
 		%% System messages.
 		{'EXIT', Parent, shutdown} ->
+
 			Reason = {stop, {exit, shutdown}, 'Parent process requested shutdown.'},
 			loop(initiate_closing(State, Reason), Buffer);
 		{'EXIT', Parent, Reason} ->
@@ -326,9 +327,9 @@ parse(State=#state{http2_status=Status, http2_machine=HTTP2Machine, streams=Stre
 		{ignore, Rest} ->
 			parse(frame_rate(State, ignore), Rest);
 		{stream_error, StreamID, Reason, Human, Rest} ->
-			erlang:display({Reason, StreamID}),
 			parse(reset_stream(State, StreamID, {stream_error, Reason, Human}), Rest);
 		Error = {connection_error, _, _} ->
+			erlang:display({Error, Data, MaxFrameSize}),
 			terminate(State, Error);
 		%% Terminate the connection if we are closing and all streams have completed.
 		more when Status =:= closing, Streams =:= #{} ->
